@@ -1,0 +1,11 @@
+<job>
+  <script language="JScript">
+    WScript.CreateObject("WScript.Shell").CurrentDirectory = WScript.CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
+    $modules = {}
+  </script>
+  <script language="VBScript" src="input-box.vbs" />
+  <script language="JScript" src="es5-shim.min.js" />
+  <script language="JScript" src="string-polyfills.js" />
+  <script language="JScript" src="ws-tools.js" />
+  <script language="JScript" src="app.js" />
+</job>
