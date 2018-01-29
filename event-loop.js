@@ -143,7 +143,7 @@
         return function () {
           if (executed) {
             executed = false
-            return 1
+            return 1 // If it returns instant 0, the loop will stuck on the position.
           } else {
             executed = true
             return 0
