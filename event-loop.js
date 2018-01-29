@@ -1,8 +1,8 @@
 (function () {
   if (typeof $eventLoop !== "undefined" || typeof setInterval !== "undefined" || typeof setTimeout !== "undefined") { return }
 
-  var eventLoop = [] // { id: number, callback: function, timeLeft: () => number }[]
-  var id = 0
+  var eventLoop = [] // { id: number, execute: function, timeLeft: () => number }[]
+  var id = 1
   var index = 0
 
   eventLoop.next = function () {
@@ -39,6 +39,7 @@
     while (!eventLoop.isEmpty()) {
       eventLoop.next()
     }
+    // WScript.Echo("finished")
   }
 
   eventLoop.getIndexById = function (id) {
@@ -105,13 +106,16 @@
   }
 
   setInterval = function (callback, interval) { //TODO callback params
+    if (typeof callback !== "function") { throw new TypeError("Parameter callback should be a function.") }
+    if (typeof interval !== "number") { throw new TypeError("Parameter interval should be a number.") }
+    if (isNaN(interval) || interval <= 0) { throw new TypeError("Parameter interval should be positive.") }
     var event = createIntervalEvent(callback, interval)
     eventLoop.append(event)
     return event.id
   }
 
   setTimeout = function (callback, timeout) {
-    var event = createTimeoutEvent(callback, timeout)
+    var event = createTimeoutEvent(callback, timeout || 0)
     eventLoop.append(event)
     return event.id
   }
@@ -128,6 +132,40 @@
 
   clearInterval = function (id) {
     eventLoop.remove(id)
+  }
+
+  var sleepWhenIdle = true
+  if (sleepWhenIdle) {
+    eventLoop.append({ // Append a manager event.
+      id: 0,
+      timeLeft: (function () {
+        var executed = false
+        return function () {
+          if (executed) {
+            executed = false
+            return 1
+          } else {
+            executed = true
+            return 0
+          }
+        }
+      })(),
+      execute: function () {
+        var eventsTimeLeft = eventLoop.filter(function (event) {
+          return event.id // Manager event's id is 0 whitch is nagative.
+        }).map(function (event) {
+          return event.timeLeft()
+        })
+        var minTimeLeft = eventsTimeLeft.reduce(function (minTimeLeft, timeLeft) {
+          return Math.min(minTimeLeft, timeLeft)
+        }) // Only if !isEmpty() an event will be executed.
+        if (minTimeLeft > 10) { WScript.Sleep(minTimeLeft - 10) } // WScript.Sleep will take extra 5~6 secs.
+      }
+    })
+
+    eventLoop.isEmpty = function () {
+      return eventLoop.length <= 1 // When 1, the only 1 is the manager event.
+    }
   }
 
   $eventLoop = { loop: eventLoop.loop }
