@@ -6,6 +6,11 @@
   <script language="VBScript" src="input-box.vbs" />
   <script language="JScript" src="es5-shim.min.js" />
   <script language="JScript" src="string-polyfills.js" />
+  <script language="JScript" src="array-polyfills.js" />
   <script language="JScript" src="ws-tools.js" />
-  <script language="JScript" src="app.js" />
+  <script language="JScript" src="event-loop.js" />
+  <script language="JScript" src="tests/event-loop.spec.js" />
+  <script language="JScript">
+    $eventLoop.loop()
+  </script>
 </job>
