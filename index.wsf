@@ -9,7 +9,8 @@
   <script language="JScript" src="array-polyfills.js" />
   <script language="JScript" src="ws-tools.js" />
   <script language="JScript" src="event-loop.js" />
-  <script language="JScript" src="tests/event-loop.spec.js" />
+  <script language="JScript" src="promise-polyfill.js" />
+  <script language="JScript" src="tests/promise.spec.js" />
   <script language="JScript">
     $eventLoop.loop()
   </script>
